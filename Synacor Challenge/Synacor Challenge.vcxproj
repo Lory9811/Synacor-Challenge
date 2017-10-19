@@ -111,6 +111,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CPU.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="System.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CPU.h" />
+    <ClInclude Include="Memory.h" />
+    <ClInclude Include="opcode.h" />
+    <ClInclude Include="System.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
