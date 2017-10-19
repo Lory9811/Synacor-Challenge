@@ -32,9 +32,6 @@
     <ClInclude Include="Memory.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="opcode.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="System.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
