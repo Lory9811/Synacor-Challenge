@@ -4,7 +4,7 @@
 #include <string>
 
 int main(int argc, char** argv) {
-	sys.Start("F:\\Visual Studio 2017\\Projects\\Synacor Challenge\\Debug\\challenge.bin");
+	sys.Start("C:\\Users\\Lorenzo.DESKTOP-AO2G7U2\\source\\repos\\Synacor-Challenge\\Synacor Challenge\\Resources\\challenge.bin");
 	while (sys.get_status() != System::Status::STOPPED) {
 		sys.Update();
 	}

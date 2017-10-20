@@ -12,7 +12,7 @@ public:
 	void Fetch();
 private:
 	Memory memory;
-	short PC;
+	unsigned short PC;
 
 	// Static methods are needed because C++ doesn't like pointers to member functions
 	static void op_halt(CPU*);

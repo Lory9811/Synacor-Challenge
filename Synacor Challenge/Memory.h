@@ -17,12 +17,12 @@ class Memory
 public:
 	Memory();
 	void LoadBinary(std::ifstream*);
-	short get_register(short register_number);
-	void set_register(short register_number, short value);
-	short pop_stack();
-	void push_stack(short value);
-	short get_value(short address);
-	void set_value(short address, short value);
+	unsigned short get_register(unsigned short register_number);
+	void set_register(unsigned short register_number, unsigned short value);
+	unsigned short pop_stack();
+	void push_stack(unsigned short value);
+	unsigned short get_value(unsigned short address);
+	void set_value(unsigned short address, unsigned short value);
 private:
 	unsigned short* m_memory = new unsigned short[MEMORY_SIZE];
 	std::stack<short> Stack;

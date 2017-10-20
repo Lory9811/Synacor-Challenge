@@ -5,7 +5,7 @@
 
 
 Memory::Memory() {
-	memset(m_memory, 0x0000, sizeof(short) * MEMORY_SIZE);
+	memset(m_memory, 0x0000, /*sizeof(unsigned short) */2 * MEMORY_SIZE);
 }
 
 void Memory::LoadBinary(std::ifstream* file) {
@@ -13,21 +13,22 @@ void Memory::LoadBinary(std::ifstream* file) {
 	short address = 0;
 	while (!file->eof()) {
 		file->read(sector, 2);
-		unsigned short value = ((unsigned short)sector[1] << 8) | sector[0];
+		unsigned short hbyte = (unsigned char)sector[1];
+		unsigned short value = (hbyte << 8) | (unsigned char)sector[0];
 		m_memory[address] = value;
 		address++;
 	}
 }
 
-short Memory::get_register(short register_number) {
+unsigned short Memory::get_register(unsigned short register_number) {
 	return m_memory[REGISTERS_ADDRESS + register_number];
 }
 
-void Memory::set_register(short register_number, short value) {
+void Memory::set_register(unsigned short register_number, unsigned short value) {
 	m_memory[REGISTERS_ADDRESS + register_number] = value;
 }
 
-short Memory::pop_stack() {
+unsigned short Memory::pop_stack() {
 	if (Stack.empty())
 		return -1;
 	short result = Stack.top();
@@ -35,14 +36,14 @@ short Memory::pop_stack() {
 	return result;
 }
 
-void Memory::push_stack(short value) {
+void Memory::push_stack(unsigned short value) {
 	Stack.push(value);
 }
 
-short Memory::get_value(short address) {
+unsigned short Memory::get_value(unsigned short address) {
 	return m_memory[address];
 }
 
-void Memory::set_value(short address, short value) {
+void Memory::set_value(unsigned short address, unsigned short value) {
 	m_memory[address] = value;
 }
