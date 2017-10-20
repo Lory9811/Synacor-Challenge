@@ -5,7 +5,8 @@
 
 
 Memory::Memory() {
-	memset(m_memory, 0x0000, /*sizeof(unsigned short) */2 * MEMORY_SIZE);
+	memset(m_memory, 0x0000, sizeof(unsigned short) * MEMORY_SIZE);
+	memset(m_register, 0x0000, sizeof(unsigned short) * REGISTERS_NUMBER);
 }
 
 void Memory::LoadBinary(std::ifstream* file) {
@@ -21,16 +22,14 @@ void Memory::LoadBinary(std::ifstream* file) {
 }
 
 unsigned short Memory::get_register(unsigned short register_number) {
-	return m_memory[REGISTERS_ADDRESS + register_number];
+	return m_register[register_number >= MEMORY_SIZE ? register_number - MEMORY_SIZE : register_number];
 }
 
 void Memory::set_register(unsigned short register_number, unsigned short value) {
-	m_memory[REGISTERS_ADDRESS + register_number] = value;
+	m_register[register_number >= MEMORY_SIZE ? register_number - MEMORY_SIZE : register_number] = value;
 }
 
 unsigned short Memory::pop_stack() {
-	if (Stack.empty())
-		return -1;
 	short result = Stack.top();
 	Stack.pop();
 	return result;

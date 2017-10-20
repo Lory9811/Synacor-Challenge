@@ -1,12 +1,17 @@
 #pragma once
 
 #ifndef MEMORY_SIZE
-#define MEMORY_SIZE 32775
+#define MEMORY_SIZE 32768
 #endif // !MEMORY_SIZE
 
 #ifndef REGISTERS_ADDRESS
 #define REGISTERS_ADDRESS 32768
 #endif // !REGISTERS_ADDRESS
+
+#ifndef REGISTERS_NUMBER
+#define REGISTERS_NUMBER 8
+#endif // !REGISTERS_NUMBER
+
 
 #include <fstream>
 #include <stack>
@@ -25,6 +30,7 @@ public:
 	void set_value(unsigned short address, unsigned short value);
 private:
 	unsigned short* m_memory = new unsigned short[MEMORY_SIZE];
+	unsigned short m_register[REGISTERS_NUMBER];
 	std::stack<short> Stack;
 };
 

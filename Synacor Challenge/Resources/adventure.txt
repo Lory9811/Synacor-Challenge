@@ -1,0 +1,19 @@
+take tablet
+use tablet
+doorway
+north
+north
+bridge
+continue
+down
+east
+take empty lantern
+west
+west
+passage
+ladder
+east
+east
+forward
+investigate
+inv
