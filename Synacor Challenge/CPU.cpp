@@ -18,8 +18,8 @@ CPU::~CPU()
 }
 
 void CPU::Fetch() {
-	// sys.DebugMessage(std::to_string(PC) + " " + std::to_string(memory.get_value(PC)) + " " + std::to_string(memory.get_value(PC + 1)) + " " + std::to_string(memory.get_value(PC + 2)) + " " + std::to_string(memory.get_value(PC + 3)) + " " + std::to_string(memory.get_value(PC + 4)));
-	opcodes[memory.get_value(PC)](this);
+	if (sys.get_status() != sys.DEBUGGING)
+		opcodes[memory.get_value(PC)](this);
 }
 
 void CPU::op_halt(CPU*) {
@@ -30,15 +30,15 @@ void CPU::op_set(CPU* vcpu) {
 	unsigned short arga = vcpu->memory.get_value(++vcpu->PC);
 	unsigned short argb = vcpu->memory.get_value(++vcpu->PC);
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
-	vcpu->memory.set_register(arga - REGISTERS_ADDRESS, argb);
+		argb = vcpu->memory.get_register(argb);
+	vcpu->memory.set_register(arga, argb);
 	vcpu->PC++;
 }
 
 void CPU::op_push(CPU* vcpu) {
 	unsigned short arga = vcpu->memory.get_value(++vcpu->PC);
 	if (arga >= REGISTERS_ADDRESS)
-		arga = vcpu->memory.get_register(arga - REGISTERS_ADDRESS);
+		arga = vcpu->memory.get_register(arga);
 	vcpu->memory.push_stack(arga);
 	vcpu->PC++;
 }
@@ -47,7 +47,6 @@ void CPU::op_pop(CPU* vcpu) {
 	unsigned short arga = vcpu->memory.get_value(++vcpu->PC);
 	vcpu->PC++;
 	if (arga >= REGISTERS_ADDRESS) {
-		arga -= REGISTERS_ADDRESS;
 		vcpu->memory.set_register(arga, vcpu->memory.pop_stack());
 		return;
 	}
@@ -61,12 +60,11 @@ void CPU::op_eq(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 	if (argc >= REGISTERS_ADDRESS)
-		argc = vcpu->memory.get_register(argc - REGISTERS_ADDRESS);
+		argc = vcpu->memory.get_register(argc);
 
 	if (arga >= REGISTERS_ADDRESS) {
-		arga -= REGISTERS_ADDRESS;
 		vcpu->memory.set_register(arga, (unsigned short)(argb == argc));
 		return;
 	}
@@ -80,12 +78,11 @@ void CPU::op_gt(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 	if (argc >= REGISTERS_ADDRESS)
-		argc = vcpu->memory.get_register(argc - REGISTERS_ADDRESS);
+		argc = vcpu->memory.get_register(argc);
 
 	if (arga >= REGISTERS_ADDRESS) {
-		arga -= REGISTERS_ADDRESS;
 		vcpu->memory.set_register(arga, (unsigned short)(argb > argc));
 		return;
 	}
@@ -96,7 +93,7 @@ void CPU::op_gt(CPU* vcpu) {
 void CPU::op_jmp(CPU* vcpu) {
 	unsigned short arga = vcpu->memory.get_value(++vcpu->PC);
 	if (arga >= REGISTERS_ADDRESS)
-		arga = vcpu->memory.get_register(arga - REGISTERS_ADDRESS);
+		arga = vcpu->memory.get_register(arga);
 	vcpu->PC = arga;
 }
 
@@ -105,10 +102,10 @@ void CPU::op_jt(CPU* vcpu) {
 	unsigned short argb = vcpu->memory.get_value(++vcpu->PC);
 	
 	if (arga >= REGISTERS_ADDRESS)
-		arga = vcpu->memory.get_register(arga - REGISTERS_ADDRESS);
+		arga = vcpu->memory.get_register(arga);
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 
 	if (arga != 0)
 		vcpu->PC = argb;
@@ -121,10 +118,10 @@ void CPU::op_jf(CPU* vcpu) {
 	unsigned short argb = vcpu->memory.get_value(++vcpu->PC);
 
 	if (arga >= REGISTERS_ADDRESS)
-		arga = vcpu->memory.get_register(arga - REGISTERS_ADDRESS);
+		arga = vcpu->memory.get_register(arga);
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 
 	if (arga == 0)
 		vcpu->PC = argb;
@@ -139,14 +136,13 @@ void CPU::op_add(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 	if (argc >= REGISTERS_ADDRESS)
-		argc = vcpu->memory.get_register(argc - REGISTERS_ADDRESS);
+		argc = vcpu->memory.get_register(argc);
 
 	unsigned short sum = (argb + argc) % 32768;
 
 	if (arga >= REGISTERS_ADDRESS) {
-		arga -= REGISTERS_ADDRESS;
 		vcpu->memory.set_register(arga, sum);
 		return;
 	}
@@ -160,14 +156,13 @@ void CPU::op_mult(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 	if (argc >= REGISTERS_ADDRESS)
-		argc = vcpu->memory.get_register(argc - REGISTERS_ADDRESS);
+		argc = vcpu->memory.get_register(argc);
 
 	unsigned short prod = (argb * argc) % 32768;
 
 	if (arga >= REGISTERS_ADDRESS) {
-		arga -= REGISTERS_ADDRESS;
 		vcpu->memory.set_register(arga, prod);
 		return;
 	}
@@ -181,9 +176,9 @@ void CPU::op_mod(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 	if (argc >= REGISTERS_ADDRESS)
-		argc = vcpu->memory.get_register(argc - REGISTERS_ADDRESS);
+		argc = vcpu->memory.get_register(argc);
 
 	unsigned short mod = argb % argc;
 
@@ -202,14 +197,13 @@ void CPU::op_and(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 	if (argc >= REGISTERS_ADDRESS)
-		argc = vcpu->memory.get_register(argc - REGISTERS_ADDRESS);
+		argc = vcpu->memory.get_register(argc);
 
 	unsigned short and = argb & argc;
 
 	if (arga >= REGISTERS_ADDRESS) {
-		arga -= REGISTERS_ADDRESS;
 		vcpu->memory.set_register(arga, and);
 		return;
 	}
@@ -223,14 +217,13 @@ void CPU::op_or(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 	if (argc >= REGISTERS_ADDRESS)
-		argc = vcpu->memory.get_register(argc - REGISTERS_ADDRESS);
+		argc = vcpu->memory.get_register(argc);
 
 	unsigned short or = argb | argc;
 
 	if (arga >= REGISTERS_ADDRESS) {
-		arga -= REGISTERS_ADDRESS;
 		vcpu->memory.set_register(arga, or);
 		return;
 	}
@@ -243,7 +236,7 @@ void CPU::op_not(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 
 	unsigned short not = (~argb) & 0x7FFF;
 
@@ -261,12 +254,11 @@ void CPU::op_rmem(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 
 	unsigned short address = vcpu->memory.get_value(argb);
 
 	if (arga >= REGISTERS_ADDRESS) {
-		arga -= REGISTERS_ADDRESS;
 		vcpu->memory.set_register(arga, address);
 		return;
 	}
@@ -279,9 +271,9 @@ void CPU::op_wmem(CPU* vcpu) {
 	vcpu->PC++;
 
 	if (arga >= REGISTERS_ADDRESS)
-		arga = vcpu->memory.get_register(arga - REGISTERS_ADDRESS);
+		arga = vcpu->memory.get_register(arga);
 	if (argb >= REGISTERS_ADDRESS)
-		argb = vcpu->memory.get_register(argb - REGISTERS_ADDRESS);
+		argb = vcpu->memory.get_register(argb);
 
 	vcpu->memory.set_value(arga, argb);
 }
@@ -290,7 +282,7 @@ void CPU::op_call(CPU* vcpu) {
 	vcpu->memory.push_stack(vcpu->PC + 2);
 	unsigned short arga = vcpu->memory.get_value(++vcpu->PC);
 	if (arga >= REGISTERS_ADDRESS)
-		arga = vcpu->memory.get_register(arga - REGISTERS_ADDRESS);
+		arga = vcpu->memory.get_register(arga);
 	vcpu->PC = arga;
 }
 
@@ -302,7 +294,7 @@ void CPU::op_ret(CPU* vcpu) {
 void CPU::op_out(CPU* vcpu) {
 	unsigned short arga = vcpu->memory.get_value(++vcpu->PC);
 	if (arga >= REGISTERS_ADDRESS)
-		arga = vcpu->memory.get_register(arga - REGISTERS_ADDRESS);
+		arga = vcpu->memory.get_register(arga);
 	std::cout << (char)arga;
 	vcpu->PC++;
 }

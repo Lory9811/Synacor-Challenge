@@ -31,6 +31,6 @@ public:
 private:
 	unsigned short* m_memory = new unsigned short[MEMORY_SIZE];
 	unsigned short m_register[REGISTERS_NUMBER];
-	std::stack<short> Stack;
+	std::stack<unsigned short> Stack;
 };
 

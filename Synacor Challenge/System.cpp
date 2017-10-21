@@ -24,6 +24,15 @@ void System::Quit() {
 	status = STOPPED;
 }
 
+void System::StartDebug() {
+	status = DEBUGGING;
+}
+
+void System::StopDebug()
+{
+	status = RUNNING;
+}
+
 void System::DebugMessage(std::string msg) {
 	std::cout << "Debug message: " << msg << std::endl;
 }

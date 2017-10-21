@@ -1,10 +1,12 @@
 #include "System.h"
+#include "Debugger.h"
 
 #include <iostream>
 #include <string>
 
 int main(int argc, char** argv) {
-	sys.Start("F:\\Visual Studio 2017\\Projects\\Synacor Challenge\\x64\\Debug\\challenge.bin");
+	sys.Start(argv[1]);
+	SetConsoleCtrlHandler(&debugger.signalHandler, TRUE);
 	while (sys.get_status() != System::Status::STOPPED) {
 		sys.Update();
 	}

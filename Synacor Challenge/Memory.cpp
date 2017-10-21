@@ -14,8 +14,7 @@ void Memory::LoadBinary(std::ifstream* file) {
 	short address = 0;
 	while (!file->eof()) {
 		file->read(sector, 2);
-		unsigned short hbyte = (unsigned char)sector[1];
-		unsigned short value = (hbyte << 8) | (unsigned char)sector[0];
+		unsigned short value = (((unsigned char)sector[1]) << 8) | (unsigned char)sector[0];
 		m_memory[address] = value;
 		address++;
 	}
@@ -30,7 +29,7 @@ void Memory::set_register(unsigned short register_number, unsigned short value) 
 }
 
 unsigned short Memory::pop_stack() {
-	short result = Stack.top();
+	unsigned short result = Stack.top();
 	Stack.pop();
 	return result;
 }
